@@ -6,7 +6,7 @@ import {
   Interaction,
   CacheType,
 } from "discord.js";
-import { Command, ModalCommand, ButtonCommand } from "./types/command";
+import { Command, ModalCommand, ButtonCommand } from "./types/command.js";
 import { Action, Actions } from "./types/action";
 import dotenv from "dotenv";
 import fs from "fs";
