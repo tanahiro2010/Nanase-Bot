@@ -82,13 +82,6 @@ export default {
                     }
                 ]
             });
-            const tmp = await interaction.guild?.channels.create({
-                name: "ticket-board",
-                type: ChannelType.GuildText,
-                parent: category?.id,
-            });
-            await tmp?.send(`<@&${moderatorId}>`);
-            await tmp?.setTopic("チケット作成用チャンネル");
 
             const button = createButton({
                 label: label,
