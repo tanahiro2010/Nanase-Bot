@@ -5,7 +5,6 @@ interface Action<ActionType = ButtonInteraction | ModalSubmitInteraction | any> 
         action: string;
         defer?: boolean;
         flags?: number;
-        
     };
 
     execute: (interaction: ActionType) => Promise<void>;
