@@ -2,7 +2,7 @@ import { CommandInteraction, EmbedBuilder, MessageFlags } from "discord.js";
 import { Command } from "../types/command";
 import botConfig from "../../bot.config";
 
-module.exports = {
+export default {
     data: {
         name: "ping",
         flags: MessageFlags.Ephemeral,

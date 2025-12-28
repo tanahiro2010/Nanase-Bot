@@ -1,16 +1,13 @@
 import { ModalSubmitInteraction } from "discord.js";
 import { Action } from "../../types/action";
 
-/**
- * Sample modal handler
- */
+const action: Action<ModalSubmitInteraction> = {
+  data: {
+    actionName: "sample",
+  },
+  execute: async (interaction: ModalSubmitInteraction) => {
+    await interaction.followUp("This is a sample modal handler.");
+  },
+};
 
-module.exports = {
-    data: {
-        action: "sample_modal",
-    },
-
-    async execute(interaction: ModalSubmitInteraction) {
-        await interaction.reply({ content: "モーダルが送信されました！", ephemeral: true });
-    }
-} as Action<ModalSubmitInteraction>;
+export default action;
