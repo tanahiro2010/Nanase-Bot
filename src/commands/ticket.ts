@@ -4,7 +4,7 @@ import { Command } from "../types/command";
 import botConfig from "../../bot.config";
 import { ActionRowBuilder } from "discord.js";
 
-module.exports = {
+export default {
     data: {
         name: "ticket",
         description: "チケットボードを作成します",
