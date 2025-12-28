@@ -5,7 +5,7 @@ interface Command {
         name: string;        // コマンド名（英語小文字とハイフンのみだったはず）
         description: string; // コマンドの説明（自由。長すぎずシンプルに）
         flags: number;       // レスポンスのフラグ。荒らし防止のためEphemeral推奨
-        defer: boolean;      // コマンド実行時にdeferを行うかどうか。処理に時間がかかる場合はtrue推奨
+        defer?: boolean;      // コマンド実行時にdeferを行うかどうか。処理に時間がかかる場合はtrue推奨
         options?: Array<{    // コマンドのオプション（引数）。不要なら省略可
             name: string;
             description: string;
@@ -33,21 +33,13 @@ interface Command {
 }
 
 interface ButtonCommand {
-    data: {
-        action: string;
-        flags: number;
-        defer?: boolean;
-    };
+    action: string;
 
     value: Record<string, any>;
 }
 
 interface ModalCommand {
-    data: {
-        action: string;
-        flags?: number;
-        defer?: boolean;
-    };
+    action: string;
 
     value: Record<string, any>;
 }

@@ -1,8 +1,9 @@
-import { ButtonBuilder, ButtonStyle } from "discord.js"
+import { ButtonBuilder, ButtonStyle } from "discord.js";
+import { ButtonCommand } from "../types/command";
 
 type Props = {
     label: string;
-    customId: Record<string, any> | string;
+    customId: ButtonCommand;
     style?: ButtonStyle;
 }
 

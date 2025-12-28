@@ -4,15 +4,16 @@
 import { ButtonInteraction, MessageFlags, EmbedBuilder, Colors } from "discord.js";
 import { Action } from "../../types/action";
 
-export default {
+module.exports = {
     data: {
-        actionName: "ticket",
+        action: "ticket",
         flags: MessageFlags.Ephemeral
     },
 
     async execute(interaction: ButtonInteraction) {
         const targetUser = interaction.user;
-        const categoryId = JSON.parse(interaction.customId);
+        const customId = JSON.parse(interaction.customId);
+        const categoryId = customId.value.category;
 
         const category = interaction.guild?.channels.cache.get(categoryId.category);
         if (!category || category.type !== 4) {
