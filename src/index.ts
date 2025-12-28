@@ -50,9 +50,9 @@ for (const folder of folders) {
   for (const file of actionFiles) {
     const path = `./handlers/${folder}/${file}`;
     const action = require(path).default as Action<any>;
-    console.warn(`    Load: ${action.data.actionName}`);
+    console.warn(`    Load: ${action.data.action}`);
 
-    actions[folder][action.data.actionName] = action;
+    actions[folder][action.data.action] = action;
   }
 
   console.log(`  End load ${folder} handlers`);
