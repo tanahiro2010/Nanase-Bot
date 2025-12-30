@@ -4,8 +4,9 @@ import botConfig from "../../../bot.config";
 const handleVcLeave = (async (oldState: VoiceState, newState: VoiceState) => {
     if (!oldState.channel) return;
     const channel = oldState.channel;
-    if (channel.parent?.id !== botConfig.customVoiceCategoryId) return;
-    if (channel.id === botConfig.customVoiceChannelId) return;
+    if (channel.parent?.id !== botConfig.voice.customCategoryId) return;
+    if (channel.id === botConfig.voice.customChannelId) return;
+    if (botConfig.voice.protectChannelIds.includes(channel.id)) return;
 
     if (channel.members.size === 0) {
         await channel.delete();

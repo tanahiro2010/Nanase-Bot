@@ -5,7 +5,7 @@ const handleVcJoin = (async (oldState: VoiceState, newState: VoiceState) => {
     if (!newState.channel) return;
 
     const channelId = newState.channel.id;
-    if (channelId !== botConfig.customVoiceChannelId) return;
+    if (channelId !== botConfig.voice.customChannelId) return;
 
     const channel = await newState.guild.channels.create({
         name : `🔊｜${newState.member?.user.username}の部屋`,
