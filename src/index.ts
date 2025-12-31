@@ -15,7 +15,6 @@ import { updateMemberCount } from "./jobs/updateMemberCount";
 import { loadCommands, loadActions } from "./utils/loader";
 import dotenv from "dotenv";
 
-
 dotenv.config({ path: ".env" });
 
 // 実行環境に応じてファイルタイプとディレクトリを決定
@@ -63,12 +62,15 @@ function logAndSendError(interaction: any, message: string, err?: any) {
   return (async () => {
     try {
       if (interaction.replied || interaction.deferred) {
-        await interaction.followUp({ content: message, ephemeral: true } as any);
+        await interaction.followUp({
+          content: message,
+          ephemeral: true,
+        } as any);
       } else if (typeof interaction.reply === "function") {
         await interaction.reply({ content: message, ephemeral: true } as any);
       }
     } catch (e) {
-      console.error('Failed to send error message to interaction', e);
+      console.error("Failed to send error message to interaction", e);
     }
   })();
 }
@@ -98,7 +100,8 @@ client.on("interactionCreate", async (interaction: Interaction<CacheType>) => {
       const { customId } = interaction;
       const command: ButtonCommand = JSON.parse(customId);
       const actionName = command.action;
-      const action: Action<ButtonInteraction> | undefined = actions.button[actionName];
+      const action: Action<ButtonInteraction> | undefined =
+        actions.button[actionName];
       if (!action) {
         console.error(`Action ${actionName} not found`);
         await interaction.followUp("This action does not exist!");
@@ -118,7 +121,8 @@ client.on("interactionCreate", async (interaction: Interaction<CacheType>) => {
       const { customId } = interaction;
       const command: ModalCommand = JSON.parse(customId);
       const actionName = command.action;
-      const action: Action<ModalSubmitInteraction> | undefined = actions.modal[actionName];
+      const action: Action<ModalSubmitInteraction> | undefined =
+        actions.modal[actionName];
       if (!action) {
         console.error(`Action ${actionName} not found`);
         await interaction.followUp("This action does not exist!");
@@ -133,7 +137,11 @@ client.on("interactionCreate", async (interaction: Interaction<CacheType>) => {
       return;
     }
   } catch (error) {
-    await logAndSendError(interaction, 'There was an error while executing this interaction!', error);
+    await logAndSendError(
+      interaction,
+      "There was an error while executing this interaction!",
+      error,
+    );
   }
 });
 
@@ -145,6 +153,14 @@ client.on("voiceStateUpdate", handleVcLeave);
 client.on("guildMemberAdd", async (member) => {
   const time = Date.now();
   const date = new Date(time);
+
+  if (member.user.bot) {
+    // BOTロールを付与
+    member.roles.add("1454099602641780737");
+
+    // 学生ロールを付与
+    member.roles.add("1454099602641780737");
+  }
 
   // 第1期生ロールを付与
   if (date.getFullYear() == 2025) {
