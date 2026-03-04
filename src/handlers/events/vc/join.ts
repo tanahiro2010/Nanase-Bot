@@ -22,6 +22,14 @@ const handleVcJoin = (async (oldState: VoiceState, newState: VoiceState) => {
                         PermissionFlagsBits.ManageChannels,
                     ],
                 },
+                {
+                    id: newState.guild.roles.everyone.id,
+                    deny: [PermissionFlagsBits.ViewChannel],
+                },
+                {
+                    id: botConfig.role.memberId,
+                    allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.Connect],
+                }
             ],
         });
 
