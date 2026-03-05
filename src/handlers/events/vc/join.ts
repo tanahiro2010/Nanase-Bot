@@ -14,6 +14,13 @@ const handleVcJoin = (async (oldState: VoiceState, newState: VoiceState) => {
             parent: newState.channel.parentId ?? undefined,
             permissionOverwrites: [
                 {
+                    id: botConfig.role.memberId,
+                    allow: [
+                        PermissionFlagsBits.ViewChannel, 
+                        PermissionFlagsBits.Connect
+                    ],
+                },
+                {
                     id: newState.member?.id || newState.member?.user.id || "",
                     allow: [
                         PermissionFlagsBits.Connect,
@@ -22,18 +29,14 @@ const handleVcJoin = (async (oldState: VoiceState, newState: VoiceState) => {
                         PermissionFlagsBits.ManageChannels,
                     ],
                 },
-                {
-                    id: newState.guild.roles.everyone.id,
-                    deny: [PermissionFlagsBits.ViewChannel],
-                },
-                {
-                    id: botConfig.role.memberId,
-                    allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.Connect],
-                }
+                
             ],
         });
 
         await newState.member?.voice.setChannel(channel);
+        await channel.permissionOverwrites.create(newState.guild.roles.everyone, {
+            ViewChannel: false,
+        });
     } catch (error) {
         console.error("vc-join: チャンネル作成に失敗しました:", error);
     }
