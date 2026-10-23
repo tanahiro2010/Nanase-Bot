@@ -1,15 +1,15 @@
 import type { ButtonInteraction, CacheType, Interaction, ModalSubmitInteraction } from "discord.js";
-import { log, LoggerType } from "../../infrastructure/logger";
+import { LoggerType, log } from "../../infrastructure/logger";
 import type { Action, Actions } from "../../types/action";
-import type { ButtonCommand, Command, ModalCommand } from "../../types/command";
+import type { Command } from "../../types/command";
 
 function parseCustomId(customId: string): { action: string } | null {
   try {
-    const parsed = JSON.parse(customId);
-    if (typeof parsed !== "object" || parsed === null || typeof parsed.action !== "string") {
+    const parsed: unknown = JSON.parse(customId);
+    if (typeof parsed !== "object" || parsed === null || !("action" in parsed) || typeof parsed.action !== "string") {
       return null;
     }
-    return parsed;
+    return { action: parsed.action };
   } catch {
     return null;
   }
@@ -21,17 +21,12 @@ async function sendInteractionError(
   err?: unknown,
 ): Promise<void> {
   log(LoggerType.ERROR, err);
-  const target = interaction as {
-    replied?: boolean;
-    deferred?: boolean;
-    followUp?: (payload: unknown) => Promise<unknown>;
-    reply?: (payload: unknown) => Promise<unknown>;
-  };
+  if (!interaction.isRepliable()) return;
   try {
-    if (target.replied || target.deferred) {
-      await target.followUp?.({ content: message, ephemeral: true });
-    } else if (typeof target.reply === "function") {
-      await target.reply({ content: message, ephemeral: true });
+    if (interaction.replied || interaction.deferred) {
+      await interaction.followUp({ content: message, ephemeral: true });
+    } else {
+      await interaction.reply({ content: message, ephemeral: true });
     }
   } catch (e) {
     log(LoggerType.ERROR, "Failed to send error message to interaction", e);
@@ -41,7 +36,7 @@ async function sendInteractionError(
 export default function createInteractionRouter(commands: Record<string, Command>, actions: Actions) {
   return async (interaction: Interaction<CacheType>): Promise<void> => {
     try {
-      if (interaction.isCommand()) {
+      if (interaction.isChatInputCommand()) {
         const command: Command | undefined = commands[interaction.commandName];
         if (!command) {
           log(LoggerType.ERROR, `Command ${interaction.commandName} not found`);
@@ -49,16 +44,15 @@ export default function createInteractionRouter(commands: Record<string, Command
           return;
         }
 
-        const flags = command.data.flags || 0;
-        if (command.data.defer !== false) await interaction.deferReply({ flags });
+        if (command.data.defer !== false) await interaction.deferReply({ flags: command.data.flags });
 
         log(LoggerType.INFO, `Executing command: ${interaction.commandName}`);
-        await command.execute(interaction as never);
+        await command.execute(interaction);
         return;
       }
 
       if (interaction.isButton()) {
-        const command = parseCustomId(interaction.customId) as ButtonCommand | null;
+        const command = parseCustomId(interaction.customId);
         if (!command) {
           log(LoggerType.ERROR, `Invalid button customId: ${interaction.customId}`);
           await interaction.deferUpdate();
@@ -72,8 +66,7 @@ export default function createInteractionRouter(commands: Record<string, Command
           return;
         }
 
-        const flags = action.data.flags || 0;
-        if (action.data.defer) await interaction.deferReply({ flags });
+        if (action.data.defer) await interaction.deferReply({ flags: action.data.flags });
 
         log(LoggerType.INFO, `Executing action: ${command.action}`);
         await action.execute(interaction);
@@ -81,7 +74,7 @@ export default function createInteractionRouter(commands: Record<string, Command
       }
 
       if (interaction.isModalSubmit()) {
-        const command = parseCustomId(interaction.customId) as ModalCommand | null;
+        const command = parseCustomId(interaction.customId);
         if (!command) {
           log(LoggerType.ERROR, `Invalid modal customId: ${interaction.customId}`);
           await interaction.reply({ content: "invalid request", ephemeral: true });
@@ -95,8 +88,7 @@ export default function createInteractionRouter(commands: Record<string, Command
           return;
         }
 
-        const flags = action.data.flags || 0;
-        if (action.data.defer) await interaction.deferReply({ flags });
+        if (action.data.defer) await interaction.deferReply({ flags: action.data.flags });
 
         log(LoggerType.INFO, `Executing action: ${command.action}`);
         await action.execute(interaction);

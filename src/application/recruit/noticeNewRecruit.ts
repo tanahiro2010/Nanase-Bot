@@ -1,11 +1,16 @@
-import { type Client, EmbedBuilder, type ThreadChannel } from "discord.js";
+import {
+  type Client,
+  EmbedBuilder,
+  type MessageCreateOptions,
+  type SendableChannels,
+  type ThreadChannel,
+} from "discord.js";
 import { botConfig } from "../../config/botConfig";
-import { log, LoggerType } from "../../infrastructure/logger";
+import { LoggerType, log } from "../../infrastructure/logger";
 
-// biome-ignore lint/suspicious/noExplicitAny: discord.js の send() は複数のペイロード型を受け付けるため
 async function sendSafely(
-  target: { send: (payload: any) => Promise<unknown> },
-  payload: any,
+  target: Pick<SendableChannels, "send">,
+  payload: MessageCreateOptions,
   label: string,
 ): Promise<boolean> {
   try {

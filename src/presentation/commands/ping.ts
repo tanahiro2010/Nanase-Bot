@@ -15,4 +15,4 @@ export default {
       .setColor(0x00ff00);
     await interaction.followUp({ embeds: [embed], allowedMentions: { roles: [botConfig.role.moderatorId] } });
   },
-} as Command;
+} satisfies Command;

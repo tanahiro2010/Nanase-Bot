@@ -1,8 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
+import type { ButtonInteraction, ModalSubmitInteraction } from "discord.js";
 import type { Action, Actions } from "../../types/action";
 import type { Command } from "../../types/command";
-import { log, LoggerType } from "../logger";
+import { LoggerType, log } from "../logger";
 
 export function loadCommands(commandsDir: string, fileType: string): Record<string, Command> {
   log(LoggerType.INFO, "Fetching command...", commandsDir);
@@ -24,24 +25,31 @@ export function loadCommands(commandsDir: string, fileType: string): Record<stri
 export function loadActions(handlersDir: string, fileType: string): Actions {
   log(LoggerType.INFO, "Fetching handlers...", handlersDir);
 
-  const actions: Actions = { button: {}, modal: {} };
-  const folders = ["button", "modal"];
+  return {
+    button: loadActionType<ButtonInteraction>(handlersDir, "button", fileType),
+    modal: loadActionType<ModalSubmitInteraction>(handlersDir, "modal", fileType),
+  };
+}
 
-  for (const folder of folders) {
-    const actionDir = path.resolve(handlersDir, folder);
-    if (!fs.existsSync(actionDir)) {
-      log(LoggerType.INFO, `  Handler Type: ${folder} (none)`);
-      continue;
-    }
+function loadActionType<InteractionType extends ButtonInteraction | ModalSubmitInteraction>(
+  handlersDir: string,
+  folder: keyof Actions,
+  fileType: string,
+): Record<string, Action<InteractionType>> {
+  const actions: Record<string, Action<InteractionType>> = {};
+  const actionDir = path.resolve(handlersDir, folder);
+  if (!fs.existsSync(actionDir)) {
+    log(LoggerType.INFO, `  Handler Type: ${folder} (none)`);
+    return actions;
+  }
 
-    const actionFiles = fs.readdirSync(actionDir).filter((file) => file.endsWith(fileType));
-    log(LoggerType.INFO, `  Handler Type: ${folder}`);
+  const actionFiles = fs.readdirSync(actionDir).filter((file) => file.endsWith(fileType));
+  log(LoggerType.INFO, `  Handler Type: ${folder}`);
 
-    for (const file of actionFiles) {
-      const action = require(path.resolve(actionDir, file)).default as Action;
-      log(LoggerType.INFO, `    Load: ${action.data.action}`);
-      actions[folder][action.data.action] = action;
-    }
+  for (const file of actionFiles) {
+    const action = require(path.resolve(actionDir, file)).default as Action<InteractionType>;
+    log(LoggerType.INFO, `    Load: ${action.data.action}`);
+    actions[action.data.action] = action;
   }
 
   return actions;

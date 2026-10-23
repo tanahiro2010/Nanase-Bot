@@ -11,7 +11,7 @@ import {
 } from "discord.js";
 import { botConfig } from "../../config/botConfig";
 import { TicketCooldown } from "../../domain/ticket/ticketPolicy";
-import { log, LoggerType } from "../../infrastructure/logger";
+import { LoggerType, log } from "../../infrastructure/logger";
 import type { Command } from "../../types/command";
 import createButton from "../interactions/createButton";
 
@@ -26,7 +26,7 @@ export default {
     name: "ticket",
     description: "チケットボードを作成します",
     flags: MessageFlags.Ephemeral,
-    default_member_permissions: PermissionFlagsBits.ManageChannels.toString(),
+    defaultMemberPermissions: PermissionFlagsBits.ManageChannels,
     defer: true,
 
     options: [
@@ -128,4 +128,4 @@ export default {
       await interaction.followUp({ embeds: [errorEmbed("チケットボードの作成中にエラーが発生しました。")] });
     }
   },
-} as Command;
+} satisfies Command;

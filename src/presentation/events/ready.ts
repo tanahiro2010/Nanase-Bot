@@ -3,7 +3,7 @@ import prefetchMembers from "../../application/member/prefetchMembers";
 import updateMemberCount from "../../application/member/updateMemberCount";
 import ensureReactionRoleMessage from "../../application/reactionRole/ensureReactionRoleMessage";
 import { reactionRoleMessageStore } from "../../application/reactionRole/reactionRoleMessageStore";
-import { log, LoggerType } from "../../infrastructure/logger";
+import { LoggerType, log } from "../../infrastructure/logger";
 import runSafely from "../../infrastructure/runSafely";
 import type { Command } from "../../types/command";
 
@@ -15,7 +15,7 @@ export default async function handleReady(client: Client, commands: Record<strin
       log(LoggerType.WARN, `  Registering command: ${command.data.name}`);
       return command.data;
     });
-    await client.application?.commands.set(data as never);
+    await client.application?.commands.set(data);
     log(LoggerType.INFO, "Commands registered successfully!");
   });
 

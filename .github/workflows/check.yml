@@ -11,6 +11,7 @@ jobs:
       matrix:
         command:
           - typecheck
+          - test
           - format:check
           - build
           # FIXME: fixが完了したらこのコメントアウトを外し、CIを有効化する。

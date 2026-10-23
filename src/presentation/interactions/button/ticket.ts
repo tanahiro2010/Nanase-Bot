@@ -8,7 +8,7 @@ import {
   PermissionFlagsBits,
 } from "discord.js";
 import ticketChannelName from "../../../domain/ticket/ticketPolicy";
-import { log, LoggerType } from "../../../infrastructure/logger";
+import { LoggerType, log } from "../../../infrastructure/logger";
 import type { Action } from "../../../types/action";
 
 function errorEmbed(description: string): EmbedBuilder {
@@ -125,4 +125,4 @@ export default {
       });
     }
   },
-} as Action<ButtonInteraction>;
+} satisfies Action<ButtonInteraction>;
